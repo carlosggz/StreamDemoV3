@@ -1,0 +1,13 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        test-in-0:
+          destination: persons-topic
+          group: ${spring.application.name}
+          binder: rabbit
+      rabbit:
+        bindings:
+          test-in-0:
+            consumer:
+              bindingRoutingKey: '#'

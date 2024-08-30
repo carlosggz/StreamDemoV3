@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: rabbit-stream-consumer
+  cloud:
+    function:
+      definition: personsInputChannel;othersInputChannel;allInputChannel
+    stream:
+      defaultBinder: rabbit
+      bindings:
+        personsInputChannel-in-0:
+          destination: persons-topic
+          group: group1
+        othersInputChannel-in-0:
+          destination: persons-topic
+          group: group2
+        allInputChannel-in-0:
+          destination: persons-topic
+          group: group3
+      rabbit:
+        bindings:
+          personsInputChannel-in-0:
+            consumer:
+              durableSubscription: false # it means not durable = auto-delete
+              autoBindDlq: true
+              republishToDlq: false
+              requeueRejected: true
+              transacted: true
+              bindingRoutingKey: first.*.key,third.*.key
+              bindingRoutingKeyDelimiter: ','
+          othersInputChannel-in-0:
+            consumer:
+              durableSubscription: false
+              autoBindDlq: true
+              republishToDlq: false
+              requeueRejected: true
+              transacted: true
+              bindingRoutingKey: second.*.key
+          allInputChannel-in-0:
+            consumer:
+              durableSubscription: false
+              autoBindDlq: true
+              republishToDlq: false
+              requeueRejected: true
+              transacted: true
+              bindingRoutingKey: "*.*.key"
+  rabbitmq:
+    broker-url: tcp://127.0.0.1:5672
+    username: myuser
+    password: mypass
+    host: localhost
+
+server:
+  port: 8082
